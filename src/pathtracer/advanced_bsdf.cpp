@@ -42,74 +42,85 @@ namespace CGL {
     }
 
     double MicrofacetBSDF::D(const Vector3D h) {
-        // TODO: proj3-2, part 3
+        // TODO Assignment 7: Part 2
         // Compute Beckmann normal distribution function (NDF) here.
         // You will need the roughness alpha.
-        return exp(-1. * pow(tan(acos(h.z)) / alpha, 2)) / (PI * pow(alpha, 2) * pow(h.z, 4));
+        double thetah = getTheta(h.unit());
+        double cos_1 = cos(thetah);
+        double tan_thetah_2 = (1 - cos_1 * cos_1) / (cos_1 * cos_1);
+
+        double up = exp(-tan_thetah_2 / (alpha * alpha));
+        double down = M_PI * alpha * alpha * cos_1 * cos_1 * cos_1 * cos_1;
+
+        double ans = up / down;
+        return ans;
     }
 
     Vector3D MicrofacetBSDF::F(const Vector3D wi) {
-        // TODO: proj3-2, part 3
+        // TODO Assignment 7: Part 2
         // Compute Fresnel term for reflection on dielectric-conductor interface.
         // You will need both eta and etaK, both of which are Vector3D.
-        double cosTheta_i = abs_cos_theta(wi);
-        Vector3D A = (eta * eta + k * k);
-        Vector3D B = 2. * eta * cosTheta_i;
-        double C = cosTheta_i * cosTheta_i;
+        Vector3D F;
+        double cosval = cos(getTheta(wi.unit()));
 
-        Vector3D Rs = (A - B + C) / (A + B + C);
-        Vector3D Rp = (A * C - B + 1.) / (A * C + B + 1.);
-        Vector3D F = (Rs + Rp) / 2.;
+        Vector3D Rs_up = eta * eta + k * k - 2 * eta * cosval + cosval * cosval;
+        Vector3D Rs_down = eta * eta + k * k + 2 * eta * cosval + cosval * cosval;
+        Vector3D Rs = Rs_up / Rs_down;
 
+        Vector3D Rp_up = (eta * eta + k * k) * cosval * cosval - 2 * eta * cosval + 1;
+        Vector3D Rp_down = (eta * eta + k * k) * cosval * cosval + 2 * eta * cosval + 1;
+        Vector3D Rp = Rp_up / Rp_down;
+
+        F = (Rs + Rp) / 2;
         return F;
     }
 
     Vector3D MicrofacetBSDF::f(const Vector3D wo, const Vector3D wi) {
-        // TODO: proj3-2, part 3
-        // Implement microfacet model here.
-        if (wo.z > 0 && wi.z > 0) {
-            Vector3D h = (wo + wi) / (wo + wi).norm();// half vector
-            return F(wi) * G(wo, wi) * D(h) / 4. / wo.z / wi.z;
+        Vector3D ans(0.0, 0.0, 0.0);
+        if (wo.z >= 0 && wo.z >= 0) {
+            Vector3D h = ((wo + wi) / 2).unit();
+            Vector3D up = F(wi) * G(wo, wi) * D(h);
+            double down = 4 * dot(Vector3D(0, 0, 1.0), wo) * dot(Vector3D(0, 0, 1.0), wi);
+            ans = up / down;
         }
-        else {
-            return Vector3D(0.);
-        }
+        return ans;
     }
 
     Vector3D MicrofacetBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
-        // TODO: proj3-2, part 3
+        // TODO Assignment 7: Part 2
         // *Importance* sample Beckmann normal distribution function (NDF) here.
         // Note: You should fill in the sampled direction *wi and the corresponding *pdf,
         //       and return the sampled BRDF value.
 
-        // Sampling half angle vector in spherial coordinates
-        Vector2D r = sampler.get_sample();
-        double r1 = r.x;
-        double r2 = r.y;
+        //*wi = cosineHemisphereSampler.get_sample(pdf);
+        Vector3D ans(0., 0., 0.);
+        double r1 = sampler.get_sample()[0];
+        double r2 = sampler.get_sample()[1];
 
-        double theta_h = atan(sqrt(-1. * pow(alpha, 2) * log(1. - r1)));
-        double phi_h = 2. * PI * r2;
-        Vector3D h(sin(theta_h) * cos(phi_h), sin(theta_h) * sin(phi_h), cos(theta_h));
+        double theta = atan(sqrt(-alpha * alpha * log(1 - r1)));
+        double phi = 2 * M_PI * r2;
+        Vector3D h(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 
-        // Assign wi based on the sampled half vector
-        *wi = (2. * dot(h, wo)) * h - wo;
+        *wi = 2. * dot(wo, h) * h - wo;
         wi->normalize();
+        if (wi->z >= 0) {
+            double p_theta_up = 2 * sin(theta) * exp(-tan(theta) * tan(theta) / (alpha * alpha));
+            double p_theta_down = alpha * alpha * cos(theta) * cos(theta) * cos(theta);
+            double p_theta = p_theta_up / p_theta_down;
 
-        // Check sampled wi validity
-        if ((*wi).z < 0) {
-            *pdf = 0.;
-            return Vector3D(0.);
+            double p_phi = 1. / (2. * M_PI);
 
+            double pwh = p_theta * p_phi / sin(theta);
+            double pwi = pwh / (4 * dot(*wi, h));
+
+            *pdf = pwi;
+            ans = MicrofacetBSDF::f(wo, *wi);
+        }
+        else {
+            *pdf = 0;
         }
 
-        // Determine pdf of having sampled the final wi
-        double p_theta =
-                (2. * sin(theta_h) / (pow(alpha, 2) * pow(cos(theta_h), 3))) * exp(-1. * pow(tan(theta_h) / alpha, 2));
-        double p_phi = 1. / 2. / PI;
-        double p_h = p_theta * p_phi / sin(theta_h);
-        *pdf = p_h / 4. / dot(*wi, h);
-
-        return MicrofacetBSDF::f(wo, *wi);
+        return ans;
     }
 
     void MicrofacetBSDF::render_debugger_node() {
