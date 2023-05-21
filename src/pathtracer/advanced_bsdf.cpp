@@ -50,7 +50,7 @@ namespace CGL {
         double tan_thetah_2 = (1 - cos_1 * cos_1) / (cos_1 * cos_1);
 
         double up = exp(-tan_thetah_2 / (alpha * alpha));
-        double down = M_PI * alpha * alpha * cos_1 * cos_1 * cos_1 * cos_1;
+        double down = PI * alpha * alpha * cos_1 * cos_1 * cos_1 * cos_1;
 
         double ans = up / down;
         return ans;
@@ -98,7 +98,7 @@ namespace CGL {
         double r2 = sampler.get_sample()[1];
 
         double theta = atan(sqrt(-alpha * alpha * log(1 - r1)));
-        double phi = 2 * M_PI * r2;
+        double phi = 2 * PI * r2;
         Vector3D h(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 
         *wi = 2. * dot(wo, h) * h - wo;
@@ -108,7 +108,7 @@ namespace CGL {
             double p_theta_down = alpha * alpha * cos(theta) * cos(theta) * cos(theta);
             double p_theta = p_theta_up / p_theta_down;
 
-            double p_phi = 1. / (2. * M_PI);
+            double p_phi = 1. / (2. * PI);
 
             double pwh = p_theta * p_phi / sin(theta);
             double pwi = pwh / (4 * dot(*wi, h));
