@@ -8,67 +8,51 @@
 
 using namespace std;
 
-namespace CGL
-{
-    namespace SceneObjects
-    {
+namespace CGL {
+    namespace SceneObjects {
 
-        BVHAccel::BVHAccel(const std::vector<Primitive*>& _primitives,
-            size_t max_leaf_size)
-        {
+        BVHAccel::BVHAccel(const std::vector<Primitive *> &_primitives,
+                           size_t max_leaf_size) {
 
-            primitives = std::vector<Primitive*>(_primitives);
+            primitives = std::vector<Primitive *>(_primitives);
             root = construct_bvh(primitives.begin(), primitives.end(), max_leaf_size);
         }
 
-        BVHAccel::~BVHAccel()
-        {
+        BVHAccel::~BVHAccel() {
             if (root)
                 delete root;
             primitives.clear();
         }
 
-        BBox BVHAccel::get_bbox() const
-        {
-            return root->bb;
-        }
+        BBox BVHAccel::get_bbox() const { return root->bb; }
 
-        void BVHAccel::draw(BVHNode* node, const Color& c, float alpha) const
-        {
-            if (node->isLeaf())
-            {
-                for (auto p = node->start; p != node->end; p++)
-                {
+        void BVHAccel::draw(BVHNode *node, const Color &c, float alpha) const {
+            if (node->isLeaf()) {
+                for (auto p = node->start; p != node->end; p++) {
                     (*p)->draw(c, alpha);
                 }
             }
-            else
-            {
+            else {
                 draw(node->l, c, alpha);
                 draw(node->r, c, alpha);
             }
         }
 
-        void BVHAccel::drawOutline(BVHNode* node, const Color& c, float alpha) const
-        {
-            if (node->isLeaf())
-            {
-                for (auto p = node->start; p != node->end; p++)
-                {
+        void BVHAccel::drawOutline(BVHNode *node, const Color &c, float alpha) const {
+            if (node->isLeaf()) {
+                for (auto p = node->start; p != node->end; p++) {
                     (*p)->drawOutline(c, alpha);
                 }
             }
-            else
-            {
+            else {
                 drawOutline(node->l, c, alpha);
                 drawOutline(node->r, c, alpha);
             }
         }
 
-        BVHNode* BVHAccel::construct_bvh(std::vector<Primitive*>::iterator start,
-            std::vector<Primitive*>::iterator end,
-            size_t max_leaf_size)
-        {
+        BVHNode *BVHAccel::construct_bvh(std::vector<Primitive *>::iterator start,
+                                         std::vector<Primitive *>::iterator end,
+                                         size_t max_leaf_size) {
 
             // TODO (Part 2.1):
             // Construct a BVH from the given vector of primitives and maximum leaf
@@ -78,18 +62,16 @@ namespace CGL
 
             BBox bbox;
 
-            for (auto p = start; p != end; p++)
-            {
+            for (auto p = start; p != end; p++) {
                 BBox bb = (*p)->get_bbox();
                 bbox.expand(bb);
             }
 
-            BVHNode* node = new BVHNode(bbox);
+            BVHNode *node = new BVHNode(bbox);
             node->start = start;
             node->end = end;
 
-            if (end - start <= max_leaf_size)
-            {
+            if (end - start <= max_leaf_size) {
                 node->l = nullptr;
                 node->r = nullptr;
                 return node;
@@ -106,11 +88,10 @@ namespace CGL
 
 
             // sort primitives along longest axis
-            sort(start, end, [axis](Primitive* a, Primitive* b)
-            {
-              BBox bb1 = a->get_bbox();
-              BBox bb2 = b->get_bbox();
-              return bb1.centroid()[axis] < bb2.centroid()[axis];
+            sort(start, end, [axis](Primitive *a, Primitive *b) {
+                BBox bb1 = a->get_bbox();
+                BBox bb2 = b->get_bbox();
+                return bb1.centroid()[axis] < bb2.centroid()[axis];
             });
 
             // split primitives into two sets and build children
@@ -123,8 +104,7 @@ namespace CGL
 
         }
 
-        bool BVHAccel::has_intersection(const Ray& ray, BVHNode* node) const
-        {
+        bool BVHAccel::has_intersection(const Ray &ray, BVHNode *node) const {
             // TODO (Part 2.3):
             // Fill in the intersect function.
             // Take note that this function has a short-circuit that the
@@ -134,12 +114,9 @@ namespace CGL
             // simply tests whether there is an intersection between the input ray and any primitives in the input BVH
             double t0, t1;
 
-            if (node->bb.intersect(ray, t0, t1))
-            {
-                if (node->isLeaf())
-                {
-                    for (auto p = node->start; p != node->end; p++)
-                    {
+            if (node->bb.intersect(ray, t0, t1)) {
+                if (node->isLeaf()) {
+                    for (auto p = node->start; p != node->end; p++) {
                         total_isects++;
                         if ((*p)->has_intersection(ray))
                             return true;
@@ -151,20 +128,16 @@ namespace CGL
             return false;
         }
 
-        bool BVHAccel::intersect(const Ray& ray, Intersection* i, BVHNode* node) const
-        {
+        bool BVHAccel::intersect(const Ray &ray, Intersection *i, BVHNode *node) const {
             // TODO (Part 2.3):
             // Fill in the intersect function.
 
             bool hit = false;
             double t0, t1;
 
-            if (node->bb.intersect(ray, t0, t1))
-            {
-                if (node->isLeaf())
-                {
-                    for (auto p = node->start; p != node->end; p++)
-                    {
+            if (node->bb.intersect(ray, t0, t1)) {
+                if (node->isLeaf()) {
+                    for (auto p = node->start; p != node->end; p++) {
                         total_isects++;
                         if ((*p)->intersect(ray, i))
                             hit = true;

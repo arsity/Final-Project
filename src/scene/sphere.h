@@ -54,7 +54,7 @@ class Sphere : public Primitive {
              false otherwise
    */
   bool intersect(const Ray& r, Intersection* i) const;
-
+  static bool intersect(double radius, const Vector3D &center, const Ray &r, double &t1, double &t2);
   /**
    * Get BSDF.
    * In the case of a sphere, the surface material BSDF is stored in 

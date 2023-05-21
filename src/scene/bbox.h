@@ -48,10 +48,10 @@ struct BBox {
   BBox(const Vector3D min, const Vector3D max) :
        min(min), max(max) { extent = max - min; }
 
-    /**
-     * Constructor.
-     * Creates a bounding box with given bounds (component wise).
-     */
+  /**
+   * Constructor.
+   * Creates a bounding box with given bounds (component wise).
+   */
   BBox(const double minX, const double minY, const double minZ,
        const double maxX, const double maxY, const double maxZ) {
     min = Vector3D(minX, minY, minZ);

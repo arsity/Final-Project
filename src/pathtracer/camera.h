@@ -15,6 +15,21 @@ namespace CGL {
 /**
  * Camera.
  */
+
+struct LensElement {
+public:
+  bool pass_through(Ray &r, double &prev_ior) const;
+  double center;
+  double radius;
+  double ior;
+  double aperture;
+private:
+  bool intersect(const Ray &r, Vector3D *hit_p) const;
+  bool refract(Ray& r, const Vector3D& hit_p, const double& prev_ior) const;
+};
+
+
+
 class Camera {
  public:
   /*
@@ -24,6 +39,13 @@ class Camera {
           of view is expanded along whichever dimension is too narrow.
     NOTE2: info.hFov and info.vFov are expected to be in DEGREES.
   */
+
+  std::vector<LensElement> elts;
+  bool trace(Ray &r) const;
+  void init_lens();
+  bool generate_ray_real_len(Ray &sampled_ray,double x, double y,int color) const;
+  Ray generate_ray_real_len_2(double x, double y, int& rays_tried, double& cos4_term) const;
+  Vector3D back_lens_sample() const;
   void configure(const Collada::CameraInfo& info,
                  size_t screenW, size_t screenH);
 
@@ -86,7 +108,7 @@ class Camera {
    * \param x x-coordinate of the ray sample in the view plane
    * \param y y-coordinate of the ray sample in the view plane
    */
-  Ray generate_ray(double x, double y) const;
+  Ray generate_ray(double x, double y,int color) const;
 
   Ray generate_ray_for_thin_lens(double x, double y, double rndR, double rndTheta) const;
 
@@ -94,7 +116,7 @@ class Camera {
   double lensRadius;
   double focalDistance;
 
- private:
+ protected:
   // Computes pos, screenXDir, screenYDir from target, r, phi, theta.
   void compute_position();
 

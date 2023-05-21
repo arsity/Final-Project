@@ -5,12 +5,14 @@
 #include <algorithm>
 #include <iostream>
 
-namespace CGL
-{
+namespace CGL {
 
-    bool BBox::intersect(const Ray& r, double& t0, double& t1) const
-    {
+    bool BBox::intersect(const Ray &r, double &t0, double &t1) const {
 
+        // TODO (Part 2.2):
+        // Implement ray - bounding box intersection test
+        // If the ray intersected the bouding box within the range given by
+        // t0, t1, update t0 and t1 with the new intersection times.
         // TODO (Part 2.2):
         // Implement ray - bounding box intersection test
         // If the ray intersected the bouding box within the range given by
@@ -43,10 +45,10 @@ namespace CGL
             t1 = tzmax;
 
         return true;
+
     }
 
-    void BBox::draw(Color c, float alpha) const
-    {
+    void BBox::draw(Color c, float alpha) const {
 
         glColor4f(c.r, c.g, c.b, alpha);
 
@@ -82,8 +84,7 @@ namespace CGL
 
     }
 
-    std::ostream& operator<<(std::ostream& os, const BBox& b)
-    {
+    std::ostream &operator<<(std::ostream &os, const BBox &b) {
         return os << "BBOX(" << b.min << ", " << b.max << ")";
     }
 

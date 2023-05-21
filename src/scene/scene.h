@@ -34,8 +34,8 @@ class SceneObject {
  */
 class SceneLight {
  public:
-  virtual Vector3D sample_L(const Vector3D p, Vector3D* wi,
-                            double* distToLight, double* pdf) const = 0;
+  virtual double sample_L(const Vector3D p, Vector3D* wi,
+                            double* distToLight, double* pdf,int color = 0, double waveLength = 0) const = 0;
   virtual bool is_delta_light() const = 0;
 
 };

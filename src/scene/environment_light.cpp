@@ -17,18 +17,19 @@ namespace CGL { namespace SceneObjects {
 
   void EnvironmentLight::init() {
     uint32_t w = envMap->w, h = envMap->h;
-    pdf_envmap = new double[w * h];
+    // x -> column, y -> row (coordinates organization), vertical arrangement
+    pdf_envmap = new double[w * h];  
     conds_y = new double[w * h];
     marginal_y = new double[h];
 
     std::cout << "[PathTracer] Initializing environment light...";
 
-    // TODO 3-2 Part 3 Task 3 Steps 1,2,3
+    // TODO Assignment 7 Part 3 Task 3 Steps 1,2,3
     // Store the environment map pdf to pdf_envmap
     // Store the marginal distribution for y to marginal_y
     // Store the conditional distribution for x given y to conds_y
 
-    double sum = 0;
+    double sum = 0.0;
     for (int j = 0; j < h; ++j) {
       for (int i = 0; i < w; ++i) {
         pdf_envmap[w * j + i] = envMap->data[w * j + i].illum() * sin(PI * (j + .5) / h);
@@ -36,10 +37,24 @@ namespace CGL { namespace SceneObjects {
       }
     }
 
+    // normalize
+    for (int i = 0; i < w * h; i++) {
+      pdf_envmap[i] /= sum;
+    }
 
-
-
-
+    double sum_my = 0.0;
+    for (int j = 0; j < h; j++) {
+      double pj = 0.0;
+      for (int i = 0; i < w; i++) {
+        sum_my += pdf_envmap[w * j + i];
+        pj += pdf_envmap[w * j + i];
+      }
+      marginal_y[j] = sum_my;
+      for (int i = 1; i < w; i++) {
+        conds_y[w * j + i] = conds_y[w * j + i - 1] + pdf_envmap[w * j + i] / pj;
+        // std::cout << pdf_envmap[w * j + i] << " " << marginal_y[j] << " " << pj << " " << conds_y[w * j + 1] << std::endl;
+      }
+    }
 
     if (true)
       std::cout << "Saving out probability_debug image for debug." << std::endl;
@@ -122,31 +137,56 @@ namespace CGL { namespace SceneObjects {
   }
 
 
-  Vector3D EnvironmentLight::sample_L(const Vector3D p, Vector3D* wi,
+  double EnvironmentLight::sample_L(const Vector3D p, Vector3D* wi,
     double* distToLight,
-    double* pdf) const {
-    // TODO: 3-2 Part 3 Tasks 2 and 3 (step 4)
+    double* pdf, int color, double waveLength) const {
+// TODO: Assignment 7 Part 3 Tasks 2 and 3 (step 4)
     // First implement uniform sphere sampling for the environment light
     // Later implement full importance sampling
 
     // Uniform
-    *wi = sampler_uniform_sphere.get_sample();
+    // *wi = sampler_uniform_sphere.get_sample();
+    // *distToLight = INF_D;
+    // *pdf = 1.0 / (4.0 * PI);
+
+    // Vector2D theta_phi = dir_to_theta_phi(*wi);
+    // Vector2D xy = theta_phi_to_xy(theta_phi);
+    // return bilerp(xy);
+
+
+    uint32_t w = envMap->w, h = envMap->h;
+
+    Vector2D sample_uniform = sampler_uniform2d.get_sample();
+    // Vector2D ij(sampler_uniform.x * w, sampler_uniform.y * h);
+    // Vector2D theta_phi(PI * ij.y / h, 2 * PI * ij.x / w);
+
+    auto row_upper = std::upper_bound(marginal_y, marginal_y + h, sample_uniform.x);
+    int y = std::distance(marginal_y, row_upper);  // row
+    auto col_upper = std::upper_bound(conds_y + y * w, conds_y + y * w + w, sample_uniform.y);
+    int x = std::distance(conds_y + y * w, col_upper);
+
+    // std::cout << sample_uniform.x << " " << sample_uniform.y << " " << x << " " << y << " " << w << " " << h << " " << std::endl;
+    Vector2D xy(x, y);
+    *wi = theta_phi_to_dir(xy_to_theta_phi(xy));
     *distToLight = INF_D;
-    *pdf = 1.0 / (4.0 * PI);
+
+    double coefficient = double(w) * h / (2 * PI * PI * sin(xy_to_theta_phi(xy).x));
+    *pdf = pdf_envmap[w * y + x] * coefficient;
+    return envMap->data[w * y + x][color];
+
+    // std::cout << envMap->data[xVal + yVal * envMap->w] << std::endl;
 
 
 
-
-    return Vector3D();
   }
 
   Vector3D EnvironmentLight::sample_dir(const Ray& r) const {
-    // TODO: 3-2 Part 3 Task 1
+    // TODO: Assignment 7 Part 3 Task 1
     // Use the helper functions to convert r.d into (x,y)
     // then bilerp the return value
-
-    return Vector3D();
-
+    Vector2D theta_phi = dir_to_theta_phi(r.d);
+    Vector2D xy = theta_phi_to_xy(theta_phi);
+    return bilerp(xy);
   }
 
 } // namespace SceneObjects

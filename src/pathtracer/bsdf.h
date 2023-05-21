@@ -68,7 +68,7 @@ class BSDF {
    * \param wi incident light direction in local space of point of intersection
    * \return reflectance in the given incident/outgoing directions
    */
-  virtual Vector3D f (const Vector3D wo, const Vector3D wi) = 0;
+  virtual double f (const Vector3D wo, const Vector3D wi, const double waveLength, const int color) = 0;
 
   /**
    * Evaluate BSDF.
@@ -81,7 +81,7 @@ class BSDF {
    * \param pdf address to store the pdf of the sampled incident direction
    * \return reflectance in the output incident and given outgoing directions
    */
-  virtual Vector3D sample_f (const Vector3D wo, Vector3D* wi, double* pdf) = 0;
+  virtual double sample_f (const Vector3D wo, Vector3D* wi, double* pdf, const double waveLength, const int color) = 0;
 
   /**
    * Get the emission value of the surface material. For non-emitting surfaces
@@ -104,12 +104,14 @@ class BSDF {
   /**
    * Reflection helper
    */
-  virtual void reflect(const Vector3D wo, Vector3D* wi);
+  virtual void reflect(const Vector3D wo, Vector3D* wi, double waveLength);
 
   /**
    * Refraction helper
    */
-  virtual bool refract(const Vector3D wo, Vector3D* wi, double ior);
+  virtual bool refract(const Vector3D wo, Vector3D* wi, double ior, double waveLength);
+
+  double wavelength_dependent_BSDF(double wavelength, Vector3D reflectance);
 
   const HDRImageBuffer* reflectanceMap;
   const HDRImageBuffer* normalMap;
@@ -128,8 +130,8 @@ class DiffuseBSDF : public BSDF {
    */
   DiffuseBSDF(const Vector3D a) : reflectance(a) { }
 
-  Vector3D f(const Vector3D wo, const Vector3D wi);
-  Vector3D sample_f(const Vector3D wo, Vector3D* wi, double* pdf);
+  double f(const Vector3D wo, const Vector3D wi, const double waveLength, const int color);
+  double sample_f(const Vector3D wo, Vector3D* wi, double* pdf, const double waveLength, const int color);
   Vector3D get_emission() const { return Vector3D(); }
   bool is_delta() const { return false; }
 
@@ -178,8 +180,8 @@ public:
 
   double D(const Vector3D h);
 
-  Vector3D f(const Vector3D wo, const Vector3D wi);
-  Vector3D sample_f(const Vector3D wo, Vector3D* wi, double* pdf);
+  double f(const Vector3D wo, const Vector3D wi,const double waveLength, const int color);
+  double sample_f(const Vector3D wo, Vector3D* wi, double* pdf,const double waveLength, const int color);
   Vector3D get_emission() const { return Vector3D(); }
   bool is_delta() const { return false; }
 
@@ -200,8 +202,8 @@ class MirrorBSDF : public BSDF {
 
   MirrorBSDF(const Vector3D reflectance) : reflectance(reflectance) { }
 
-  Vector3D f(const Vector3D wo, const Vector3D wi);
-  Vector3D sample_f(const Vector3D wo, Vector3D* wi, double* pdf);
+  double f(const Vector3D wo, const Vector3D wi,const double waveLength, const int color);
+  double sample_f(const Vector3D wo, Vector3D* wi, double* pdf,const double waveLength, const int color);
   Vector3D get_emission() const { return Vector3D(); }
   bool is_delta() const { return true; }
 
@@ -223,8 +225,8 @@ class RefractionBSDF : public BSDF {
   RefractionBSDF(const Vector3D transmittance, double roughness, double ior)
     : transmittance(transmittance), roughness(roughness), ior(ior) { }
 
-  Vector3D f(const Vector3D wo, const Vector3D wi);
-  Vector3D sample_f(const Vector3D wo, Vector3D* wi, double* pdf);
+  double f(const Vector3D wo, const Vector3D wi,const double waveLength, const int color);
+  double sample_f(const Vector3D wo, Vector3D* wi, double* pdf,const double waveLength, const int color);
   Vector3D get_emission() const { return Vector3D(); }
   bool is_delta() const { return true; }
 
@@ -249,8 +251,8 @@ class GlassBSDF : public BSDF {
     transmittance(transmittance), reflectance(reflectance),
     roughness(roughness), ior(ior) { }
 
-  Vector3D f(const Vector3D wo, const Vector3D wi);
-  Vector3D sample_f(const Vector3D wo, Vector3D* wi, double* pdf);
+  double f(const Vector3D wo, const Vector3D wi,const double waveLength, const int color);
+  double sample_f(const Vector3D wo, Vector3D* wi, double* pdf,const double waveLength, const int color);
   Vector3D get_emission() const { return Vector3D(); }
   bool is_delta() const { return true; }
 
@@ -273,8 +275,8 @@ class EmissionBSDF : public BSDF {
 
   EmissionBSDF(const Vector3D radiance) : radiance(radiance) { }
 
-  Vector3D f(const Vector3D wo, const Vector3D wi);
-  Vector3D sample_f(const Vector3D wo, Vector3D* wi, double* pdf);
+  double f(const Vector3D wo, const Vector3D wi,const double waveLength, const int color);
+  double sample_f(const Vector3D wo, Vector3D* wi, double* pdf,const double waveLength, const int color);
   Vector3D get_emission() const { return radiance; }
   bool is_delta() const { return false; }
 
