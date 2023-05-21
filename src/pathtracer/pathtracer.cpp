@@ -4,6 +4,8 @@
 #include "scene/sphere.h"
 #include "scene/triangle.h"
 
+#define RR_rate 0.8
+
 using namespace CGL::SceneObjects;
 
 namespace CGL {
@@ -29,9 +31,9 @@ namespace CGL {
     }
 
     void PathTracer::clear() {
-        bvh = NULL;
-        scene = NULL;
-        camera = NULL;
+        bvh = nullptr;
+        scene = nullptr;
+        camera = nullptr;
         sampleBuffer.clear();
         sampleCountBuffer.clear();
         sampleBuffer.resize(0, 0);
@@ -201,12 +203,12 @@ namespace CGL {
         ray.max_t = INF_D - EPS_F;
 
         Intersection shadowIsect;
-        if (bvh->intersect(ray, &shadowIsect) && coin_flip(0.7)) {
+        if (bvh->intersect(ray, &shadowIsect) && coin_flip(RR_rate)) {
             auto L = at_least_one_bounce_radiance(ray, shadowIsect);
             if (isect.bsdf->is_delta())
                 L += zero_bounce_radiance(ray, shadowIsect);
             auto f_l = f * L;
-            L_out += f_l * abs_cos_theta(w_in) / pdf / 0.7;
+            L_out += f_l * abs_cos_theta(w_in) / pdf / RR_rate;
         }
 
         return L_out;
