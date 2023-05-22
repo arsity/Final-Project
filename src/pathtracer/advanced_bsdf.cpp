@@ -77,7 +77,7 @@ namespace CGL {
 
     Vector3D MicrofacetBSDF::f(const Vector3D wo, const Vector3D wi) {
         Vector3D ans(0.0, 0.0, 0.0);
-        if (wo.z >= 0 && wo.z >= 0) {
+        if (wo.z >= 0) {
             Vector3D h = ((wo + wi) / 2).unit();
             Vector3D up = F(wi) * G(wo, wi) * D(h);
             double down = 4 * dot(Vector3D(0, 0, 1.0), wo) * dot(Vector3D(0, 0, 1.0), wi);

@@ -1,4 +1,6 @@
 #include "sampler.h"
+#include <random>
+#include <chrono>
 
 namespace CGL {
 
@@ -65,6 +67,13 @@ namespace CGL {
         double theta = 2. * PI * Xi2;
         *pdf = sqrt(1 - Xi1) / PI;
         return Vector3D(r * cos(theta), r * sin(theta), sqrt(1 - Xi1));
+    }
+
+    double GaussianDistributionSampler1D(double mean = 0, double variance = 1) {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::default_random_engine generator(seed);
+        std::normal_distribution<double> distribution(mean, variance);
+        return distribution(generator);
     }
 
 

@@ -269,14 +269,16 @@ namespace CGL {
             auto rayList = std::list<Ray>();
 
             // RGB
-            auto wavelengthList = std::vector<double>{600, 550, 450};
+//            auto wavelengthList = std::vector<double>{600, 550, 450};
+            auto wavelengthList = std::vector<double>{589.3, 589.3, 589.3};
+
 
             auto sample = origin + gridSampler->get_sample();
 
             for (int i = 0; i < 3; i++) {
                 auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);
-                r.color = i;
-                r.wavelength = wavelengthList[i];
+                r.color = i % 3;
+                r.wavelength = wavelengthList[i % 3];
                 r.depth = max_ray_depth;
                 rayList.push_back(r);
             }
@@ -286,6 +288,8 @@ namespace CGL {
                 auto tmp = est_radiance_global_illumination(r);
                 newRadiance[r.color] = tmp[r.color];
             }
+
+            newRadiance /= (rayList.size() / 3);
 
             radiance = (radiance * num_samples + newRadiance) / (num_samples + 1);
 
