@@ -148,6 +148,8 @@ namespace CGL {
             return {};
 
         auto eta = 1.0 / ior;
+        auto fac = 589 / wavelength;
+        eta = eta / fac;
         if (wo.z < 0)
             eta = ior;
 
@@ -181,6 +183,8 @@ namespace CGL {
         }
 
         auto eta = 1.0 / ior;
+        auto fac = 589 / wavelength;
+        eta = eta / fac;
         if (wo.z < 0)
             eta = ior;
 
