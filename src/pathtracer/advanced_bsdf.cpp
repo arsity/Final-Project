@@ -234,8 +234,8 @@ namespace CGL {
         auto t = dot(wo, Vector3D{0, 0, 1});
 
         auto eta = 1.0 / ior;  // default entering case
-//        auto fac = 589.3 / wavelength;
-//        eta = eta / fac;
+        auto fac = 589.3 / wavelength;
+        eta = eta / fac;
         if (t < 0)  // existing case
             eta = ior;
 
