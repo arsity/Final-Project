@@ -143,7 +143,7 @@ namespace CGL {
         // Implement RefractionBSDF
 
         *pdf = 1.0;
-        auto t = refract(wo, wi, ior);
+        auto t = refract(wo, wi, 589, ior);
         if (!t)
             return {};
 
@@ -174,7 +174,7 @@ namespace CGL {
         // Compute Fresnel coefficient and either reflect or refract based on it.
 
         *pdf = 1.0;
-        auto t = refract(wo, wi, ior);
+        auto t = refract(wo, wi, 589, ior);
         if (!t) {
             reflect(wo, wi);
             return reflectance / abs_cos_theta(*wi);
@@ -218,7 +218,7 @@ namespace CGL {
 
     }
 
-    bool BSDF::refract(const Vector3D wo, Vector3D *wi, double ior) {
+    bool BSDF::refract(const Vector3D wo, Vector3D *wi, double ior, double wavelength = 589) {
 
         // TODO Assignment 7: Part 1
         // Use Snell's Law to refract wo surface and store result ray in wi.
@@ -230,6 +230,8 @@ namespace CGL {
         auto t = dot(wo, Vector3D{0, 0, 1});
 
         auto eta = 1.0 / ior;  // default entering case
+        auto fac = 589 / wavelength;
+        eta = eta / fac;
         if (t < 0)  // existing case
             eta = ior;
 

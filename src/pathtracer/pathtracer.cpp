@@ -267,7 +267,8 @@ namespace CGL {
 
         do {
             auto sample = origin + gridSampler->get_sample();
-            auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);
+            auto wavelength = 589.0;
+            auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h, wavelength);
             r.depth = max_ray_depth;
 
             auto newRadiance = est_radiance_global_illumination(r);
@@ -300,7 +301,8 @@ namespace CGL {
     }
 
     void PathTracer::autofocus(Vector2D loc) {
-        Ray r = camera->generate_ray(loc.x / sampleBuffer.w, loc.y / sampleBuffer.h);
+        auto wavelength = 589.0;
+        Ray r = camera->generate_ray(loc.x / sampleBuffer.w, loc.y / sampleBuffer.h,wavelength);
         Intersection isect;
 
         bvh->intersect(r, &isect);
