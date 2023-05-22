@@ -267,10 +267,11 @@ namespace CGL {
 
         do {
             auto rayList = std::list<Ray>();
-            auto sample = origin + gridSampler->get_sample();
 
             // RGB
-            auto wavelengthList = std::vector<double>{740, 590, 440};
+            auto wavelengthList = std::vector<double>{600, 550, 450};
+
+            auto sample = origin + gridSampler->get_sample();
 
             for (int i = 0; i < 3; i++) {
                 auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);

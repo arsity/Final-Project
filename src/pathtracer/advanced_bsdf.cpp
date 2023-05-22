@@ -148,7 +148,7 @@ namespace CGL {
             return {};
 
         auto eta = 1.0 / ior;
-        auto fac = 589 / wavelength;
+        auto fac = 589.3 / wavelength;
         eta = eta / fac;
         if (wo.z < 0)
             eta = ior;
@@ -183,7 +183,7 @@ namespace CGL {
         }
 
         auto eta = 1.0 / ior;
-        auto fac = 589 / wavelength;
+        auto fac = 589.3 / wavelength;
         eta = eta / fac;
         if (wo.z < 0)
             eta = ior;
@@ -234,8 +234,8 @@ namespace CGL {
         auto t = dot(wo, Vector3D{0, 0, 1});
 
         auto eta = 1.0 / ior;  // default entering case
-        auto fac = 589 / wavelength;
-        eta = eta / fac;
+//        auto fac = 589.3 / wavelength;
+//        eta = eta / fac;
         if (t < 0)  // existing case
             eta = ior;
 
