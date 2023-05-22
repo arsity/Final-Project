@@ -270,7 +270,7 @@ namespace CGL {
             auto sample = origin + gridSampler->get_sample();
 
             // RGB
-            auto wavelengthList = std::vector<double>{700, 550, 400};
+            auto wavelengthList = std::vector<double>{740, 590, 440};
 
             for (int i = 0; i < 3; i++) {
                 auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);
