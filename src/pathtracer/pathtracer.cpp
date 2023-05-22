@@ -299,7 +299,7 @@ namespace CGL {
             auto newRadiance = Vector3D();
             for (const auto &r: rayList) {
                 auto tmp = est_radiance_global_illumination(r);
-                newRadiance[r.color] = tmp[r.color];
+                newRadiance[r.color] += tmp[r.color];
             }
 
             newRadiance /= (rayList.size() / 3);
