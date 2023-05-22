@@ -6,7 +6,7 @@
 #include <random>
 #include <chrono>
 
-#define RR_rate 0.8
+#define RR_rate 0.7
 
 using namespace CGL::SceneObjects;
 
