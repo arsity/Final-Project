@@ -3,6 +3,8 @@
 #include "scene/light.h"
 #include "scene/sphere.h"
 #include "scene/triangle.h"
+#include <random>
+#include <chrono>
 
 #define RR_rate 0.8
 
@@ -275,7 +277,13 @@ namespace CGL {
             auto rayList = std::list<Ray>();
 
             // RGB
-            auto wavelengthList = std::vector<double>{600, 550, 450};
+            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+            std::default_random_engine generator(seed);
+            std::normal_distribution<double> Red(600, 25);
+            std::normal_distribution<double> Green(550, 25);
+            std::normal_distribution<double> Blue(450, 15);
+
+            std::vector wavelengthList = {Red, Green, Blue};
 //            auto wavelengthList = std::vector<double>{589.3, 589.3, 589.3};
 
 
@@ -284,7 +292,7 @@ namespace CGL {
             for (int i = 0; i < 3; i++) {
                 auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);
                 r.color = i % 3;
-                r.wavelength = wavelengthList[i % 3];
+                r.wavelength = wavelengthList[i % 3](generator);
                 r.depth = max_ray_depth;
                 rayList.push_back(r);
             }
