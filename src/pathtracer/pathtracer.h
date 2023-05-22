@@ -108,6 +108,7 @@ namespace CGL {
         double tm_level;                           ///< exposure level
         double tm_key;                             ///< key value
         double tm_wht;                             ///< white point
+        double color_temperature(int temperature, int color);
     };
 
 }  // namespace CGL

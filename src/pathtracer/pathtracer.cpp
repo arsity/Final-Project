@@ -322,6 +322,13 @@ namespace CGL {
 
         } while (num_samples < ns_aa);
 
+        int temperature = 10000;
+        for (int color = 0; color < 3; color++) {
+            double radiance_cof = color_temperature(temperature, color);
+            radiance_cof /= 255;
+            radiance[color] *= radiance_cof;
+        }
+
         sampleBuffer.update_pixel(radiance, x, y);
         sampleCountBuffer[x + y * sampleBuffer.w] = num_samples;
 
@@ -340,6 +347,54 @@ namespace CGL {
         bvh->intersect(r, &isect);
 
         camera->focalDistance = isect.t;
+    }
+
+    // temperature: 1000 - 40000
+    double PathTracer::color_temperature(int temperature, int color) {
+        double radiance;
+        temperature /= 100;
+        switch (color)
+        {
+            case 0: // R
+                if (temperature <= 66) {
+                    radiance = 255;
+                } else {
+                    radiance = temperature - 60;
+                    radiance = 329.698727446 * (pow(radiance, -0.1332047592));
+                    if (radiance < 0) radiance = 0;
+                    if (radiance > 255) radiance = 255;
+                }
+                break;
+
+            case 1: // G
+                if (temperature <= 66) {
+                    radiance = temperature;
+                    radiance = 99.4708025861 * log(radiance) - 161.1195681661;
+                    if (radiance < 0) radiance = 0;
+                    if (radiance > 255) radiance = 255;
+                } else {
+                    radiance = temperature - 60;
+                    radiance = 288.1221695283 * pow(radiance, -0.0755148492);
+                    if (radiance < 0) radiance = 0;
+                    if (radiance > 255) radiance = 255;
+                }
+                break;
+
+            case 2: // B
+                if (temperature >= 66) {
+                    radiance = 255;
+                } else {
+                    if (temperature <= 19) {
+                        radiance = 0;
+                    } else {
+                        radiance = temperature - 10;
+                        radiance = 138.5177312231 * log(radiance) - 305.0447927307;
+                        if (radiance < 0) radiance = 0;
+                        if (radiance > 255) radiance = 255;
+                    }
+                }
+        }
+        return radiance;
     }
 
 } // namespace CGL
