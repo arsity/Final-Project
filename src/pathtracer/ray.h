@@ -28,6 +28,7 @@ namespace CGL {
         Vector3D inv_d;  ///< component wise inverse
 
         double wavelength;
+        int color;
 
         Ray() {}
 

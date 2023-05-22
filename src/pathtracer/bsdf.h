@@ -81,7 +81,7 @@ namespace CGL {
          * \param pdf address to store the pdf of the sampled incident direction
          * \return reflectance in the output incident and given outgoing directions
          */
-        virtual Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf) = 0;
+        virtual Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) = 0;
 
         /**
          * Get the emission value of the surface material. For non-emitting surfaces
@@ -130,7 +130,7 @@ namespace CGL {
 
         Vector3D f(const Vector3D wo, const Vector3D wi);
 
-        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf);
+        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength);
 
         Vector3D get_emission() const { return Vector3D(); }
 
@@ -183,7 +183,7 @@ namespace CGL {
 
         Vector3D f(const Vector3D wo, const Vector3D wi);
 
-        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf);
+        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength);
 
         Vector3D get_emission() const { return Vector3D(); }
 
@@ -208,7 +208,7 @@ namespace CGL {
 
         Vector3D f(const Vector3D wo, const Vector3D wi);
 
-        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf);
+        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength);
 
         Vector3D get_emission() const { return Vector3D(); }
 
@@ -234,7 +234,7 @@ namespace CGL {
 
         Vector3D f(const Vector3D wo, const Vector3D wi);
 
-        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf);
+        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength);
 
         Vector3D get_emission() const { return Vector3D(); }
 
@@ -263,7 +263,7 @@ namespace CGL {
 
         Vector3D f(const Vector3D wo, const Vector3D wi);
 
-        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf);
+        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength);
 
         Vector3D get_emission() const { return Vector3D(); }
 
@@ -290,7 +290,7 @@ namespace CGL {
 
         Vector3D f(const Vector3D wo, const Vector3D wi);
 
-        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf);
+        Vector3D sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength);
 
         Vector3D get_emission() const { return radiance; }
 

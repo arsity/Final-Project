@@ -194,10 +194,12 @@ namespace CGL {
         return degrees * PI / 180;
     }
 
+
+
 /**
  * This function generates a ray from camera perspective, passing through camera / sensor plane (x,y)
  */
-    Ray Camera::generate_ray(double x, double y,double wavelength) const {
+    Ray Camera::generate_ray(double x, double y) const {
 
         // TODO (Part 1.1):
         // compute position of the input sensor sample coordinate on the
@@ -222,8 +224,6 @@ namespace CGL {
         ray.o = pos;
         ray.d = c2w * ray.d;
         ray.d.normalize();
-
-        ray.wavelength = wavelength;
 
         return ray;
     }

@@ -18,7 +18,7 @@ namespace CGL {
         return Vector3D();
     }
 
-    Vector3D MirrorBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
+    Vector3D MirrorBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) {
 
         // TODO Assignment 7: Part 1
         // Implement MirrorBSDF
@@ -86,7 +86,7 @@ namespace CGL {
         return ans;
     }
 
-    Vector3D MicrofacetBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
+    Vector3D MicrofacetBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) {
         // TODO Assignment 7: Part 2
         // *Importance* sample Beckmann normal distribution function (NDF) here.
         // Note: You should fill in the sampled direction *wi and the corresponding *pdf,
@@ -138,12 +138,12 @@ namespace CGL {
         return Vector3D();
     }
 
-    Vector3D RefractionBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
+    Vector3D RefractionBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) {
         // TODO Assignment 7: Part 1
         // Implement RefractionBSDF
 
         *pdf = 1.0;
-        auto t = refract(wo, wi, 589, ior);
+        auto t = refract(wo, wi, ior, wavelength);
         if (!t)
             return {};
 
@@ -168,13 +168,13 @@ namespace CGL {
         return Vector3D();
     }
 
-    Vector3D GlassBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
+    Vector3D GlassBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) {
 
         // TODO Assignment 7: Part 1
         // Compute Fresnel coefficient and either reflect or refract based on it.
 
         *pdf = 1.0;
-        auto t = refract(wo, wi, 589, ior);
+        auto t = refract(wo, wi, ior, wavelength);
         if (!t) {
             reflect(wo, wi);
             return reflectance / abs_cos_theta(*wi);

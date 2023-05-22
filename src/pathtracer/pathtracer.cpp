@@ -195,7 +195,7 @@ namespace CGL {
         Vector3D w_in;
         double pdf;
 
-        auto f = isect.bsdf->sample_f(w_out, &w_in, &pdf);
+        auto f = isect.bsdf->sample_f(w_out, &w_in, &pdf, r.wavelength);
         auto wi = o2w * w_in;
         auto ray = Ray(hit_p, wi);
         ray.depth = r.depth - 1;
@@ -266,12 +266,26 @@ namespace CGL {
         double s1 = 0, s2 = 0, miu, sigma;
 
         do {
+            auto rayList = std::list<Ray>();
             auto sample = origin + gridSampler->get_sample();
-            auto wavelength = 589.0;
-            auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h, wavelength);
-            r.depth = max_ray_depth;
 
-            auto newRadiance = est_radiance_global_illumination(r);
+            // RGB
+            auto wavelengthList = std::vector<double>{700, 550, 400};
+
+            for (int i = 0; i < 3; i++) {
+                auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);
+                r.color = i;
+                r.wavelength = wavelengthList[i];
+                r.depth = max_ray_depth;
+                rayList.push_back(r);
+            }
+
+            auto newRadiance = Vector3D();
+            for (const auto &r: rayList) {
+                auto tmp = est_radiance_global_illumination(r);
+                newRadiance[r.color] = tmp[r.color];
+            }
+
             radiance = (radiance * num_samples + newRadiance) / (num_samples + 1);
 
             num_samples++;
@@ -301,8 +315,7 @@ namespace CGL {
     }
 
     void PathTracer::autofocus(Vector2D loc) {
-        auto wavelength = 589.0;
-        Ray r = camera->generate_ray(loc.x / sampleBuffer.w, loc.y / sampleBuffer.h,wavelength);
+        Ray r = camera->generate_ray(loc.x / sampleBuffer.w, loc.y / sampleBuffer.h);
         Intersection isect;
 
         bvh->intersect(r, &isect);

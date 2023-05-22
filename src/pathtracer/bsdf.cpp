@@ -74,7 +74,7 @@ namespace CGL {
 /**
  * Evalutate diffuse lambertian BSDF.
  */
-    Vector3D DiffuseBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
+    Vector3D DiffuseBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) {
         // TODO (Part 3.1):
         // This function takes in only wo and provides pointers for wi and pdf,
         // which should be assigned by this function.
@@ -104,7 +104,7 @@ namespace CGL {
 /**
  * Evalutate Emission BSDF (Light Source)
  */
-    Vector3D EmissionBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf) {
+    Vector3D EmissionBSDF::sample_f(const Vector3D wo, Vector3D *wi, double *pdf, double wavelength) {
         *pdf = 1.0 / PI;
         *wi = sampler.get_sample(pdf);
         return Vector3D();
