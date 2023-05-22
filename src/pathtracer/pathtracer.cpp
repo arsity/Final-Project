@@ -80,6 +80,8 @@ namespace CGL {
             auto nextRay = Ray(hit_p, wi);
             nextRay.min_t = EPS_F;
             nextRay.max_t = INF_F - EPS_F;
+            nextRay.color = r.color;
+            nextRay.wavelength = r.wavelength;
 
             Intersection nextIsect{};
             if (!bvh->intersect(nextRay, &nextIsect)) continue;
@@ -122,6 +124,8 @@ namespace CGL {
                     auto nextRay = Ray(hit_p, wi);
                     nextRay.min_t = EPS_F;
                     nextRay.max_t = distToLight - EPS_F;
+                    nextRay.color = r.color;
+                    nextRay.wavelength = r.wavelength;
 
                     if (bvh->has_intersection(nextRay)) continue;
                     L_out +=
@@ -201,6 +205,8 @@ namespace CGL {
         ray.depth = r.depth - 1;
         ray.min_t = EPS_F;
         ray.max_t = INF_D - EPS_F;
+        ray.color = r.color;
+        ray.wavelength = r.wavelength;
 
         Intersection shadowIsect;
         if (bvh->intersect(ray, &shadowIsect) && coin_flip(RR_rate)) {
@@ -269,8 +275,8 @@ namespace CGL {
             auto rayList = std::list<Ray>();
 
             // RGB
-//            auto wavelengthList = std::vector<double>{600, 550, 450};
-            auto wavelengthList = std::vector<double>{589.3, 589.3, 589.3};
+            auto wavelengthList = std::vector<double>{600, 550, 450};
+//            auto wavelengthList = std::vector<double>{589.3, 589.3, 589.3};
 
 
             auto sample = origin + gridSampler->get_sample();
