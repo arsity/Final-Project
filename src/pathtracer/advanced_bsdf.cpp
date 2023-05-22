@@ -151,7 +151,7 @@ namespace CGL {
         auto fac = 589.3 / wavelength;
         eta = eta / fac;
         if (wo.z < 0)
-            eta = ior;
+            eta = 1.0/eta;
 
         return transmittance / abs_cos_theta(*wi) / pow(eta, 2.0);
     }
@@ -186,7 +186,7 @@ namespace CGL {
         auto fac = 589.3 / wavelength;
         eta = eta / fac;
         if (wo.z < 0)
-            eta = ior;
+            eta = 1.0/eta;
 
         auto R_0 = pow((1.0 - eta) / (1.0 + eta), 2.0);
         auto R = R_0 + (1.0 - R_0) * pow(1.0 - abs_cos_theta(wo), 5.0);
@@ -237,7 +237,7 @@ namespace CGL {
         auto fac = 589.3 / wavelength;
         eta = eta / fac;
         if (t < 0)  // existing case
-            eta = ior;
+            eta = 1.0/eta;
 
         auto internal_term = 1.0 - eta * eta * (1.0 - pow(wo.z, 2.0));
         if (internal_term < 0)
