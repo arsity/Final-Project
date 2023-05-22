@@ -147,8 +147,8 @@ namespace CGL {
         if (!t)
             return {};
 
-        auto eta = 1.0 / ior;
-        auto fac = 589.3 / wavelength;
+        auto eta = 1.000293 / ior;
+        auto fac = 589.29 / wavelength;
         eta = eta / fac;
         if (wo.z < 0)
             eta = 1.0/eta;
@@ -182,8 +182,8 @@ namespace CGL {
             return reflectance / abs_cos_theta(*wi);
         }
 
-        auto eta = 1.0 / ior;
-        auto fac = 589.3 / wavelength;
+        auto eta = 1.000293 / ior;
+        auto fac = 589.29 / wavelength;
         eta = eta / fac;
         if (wo.z < 0)
             eta = 1.0/eta;
@@ -233,8 +233,8 @@ namespace CGL {
         *wi = Vector3D();
         auto t = dot(wo, Vector3D{0, 0, 1});
 
-        auto eta = 1.0 / ior;  // default entering case
-        auto fac = 589.3 / wavelength;
+        auto eta = 1.000293 / ior;  // default entering case
+        auto fac = 589.29 / wavelength;
         eta = eta / fac;
         if (t < 0)  // existing case
             eta = 1.0/eta;

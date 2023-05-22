@@ -7,6 +7,7 @@
 #include <chrono>
 
 #define RR_rate 0.7
+#define SAMPLE_per_color 16
 
 using namespace CGL::SceneObjects;
 
@@ -277,6 +278,8 @@ namespace CGL {
             auto rayList = std::list<Ray>();
 
             // RGB
+            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+            std::default_random_engine generator(seed);
             std::normal_distribution<double> Red(620, 30);
             std::normal_distribution<double> Green(530, 30);
             std::normal_distribution<double> Blue(465, 15);
@@ -286,9 +289,7 @@ namespace CGL {
 
             auto sample = origin + gridSampler->get_sample();
 
-            for (int i = 0; i < 27; i++) {
-                unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-                std::default_random_engine generator(seed);
+            for (int i = 0; i < SAMPLE_per_color*3; i++) {
                 auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);
                 r.color = i % 3;
                 r.wavelength = wavelengthList[i % 3](generator);
