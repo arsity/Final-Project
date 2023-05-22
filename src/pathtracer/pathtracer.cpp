@@ -6,7 +6,7 @@
 #include <random>
 #include <chrono>
 
-#define RR_rate 0.7
+#define RR_rate 0.6
 #define SAMPLE_per_color 16
 #define COLOR_TEMPERATURE 1000
 
