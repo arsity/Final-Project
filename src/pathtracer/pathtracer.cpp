@@ -277,16 +277,16 @@ namespace CGL {
             auto rayList = std::list<Ray>();
 
             // RGB
-            std::normal_distribution<double> Red(670, 30);
-            std::normal_distribution<double> Green(540, 20);
-            std::normal_distribution<double> Blue(470, 20);
+            std::normal_distribution<double> Red(620, 30);
+            std::normal_distribution<double> Green(530, 30);
+            std::normal_distribution<double> Blue(465, 15);
 
             std::vector wavelengthList = {Red, Green, Blue};
 //            auto wavelengthList = std::vector<double>{589.3, 589.3, 589.3};
 
             auto sample = origin + gridSampler->get_sample();
 
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 27; i++) {
                 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
                 std::default_random_engine generator(seed);
                 auto r = camera->generate_ray(sample.x / sampleBuffer.w, sample.y / sampleBuffer.h);

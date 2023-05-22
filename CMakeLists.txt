@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(Final-Project)
+project(Final-Project LANGUAGES CUDA CXX C)
 
 #-------------------------------------------------------------------------------
 # Build options
@@ -139,6 +139,9 @@ if (WIN32)
 endif()
 
 add_executable(pathtracer ${APPLICATION_3_2_SOURCE} ${APPLICATION_HEADERS})
+set_property(TARGET pathtracer
+                PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+
 target_include_directories(pathtracer PUBLIC src)
 
 set(OpenGL_GL_PREFERENCE LEGACY)
