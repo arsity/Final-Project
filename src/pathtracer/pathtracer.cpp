@@ -8,6 +8,7 @@
 
 #define RR_rate 0.7
 #define SAMPLE_per_color 16
+#define COLOR_TEMPERATURE 1000
 
 using namespace CGL::SceneObjects;
 
@@ -322,9 +323,9 @@ namespace CGL {
 
         } while (num_samples < ns_aa);
 
-        int temperature = 10000;
+        auto temperature = COLOR_TEMPERATURE;
         for (int color = 0; color < 3; color++) {
-            double radiance_cof = color_temperature(temperature, color);
+            auto radiance_cof = color_temperature(temperature, color);
             radiance_cof /= 255;
             radiance[color] *= radiance_cof;
         }
