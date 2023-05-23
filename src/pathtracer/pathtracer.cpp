@@ -6,9 +6,9 @@
 #include <random>
 #include <chrono>
 
-#define RR_rate 0.6
-#define SAMPLE_per_color 16
-#define COLOR_TEMPERATURE 1000
+#define RR_rate 0.8
+#define SAMPLE_per_color 32
+#define COLOR_TEMPERATURE 6500
 
 using namespace CGL::SceneObjects;
 
